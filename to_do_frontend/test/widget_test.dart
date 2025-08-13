@@ -3,16 +3,35 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:to_do_frontend/main.dart';
 
 void main() {
-  testWidgets('App generation message displayed', (WidgetTester tester) async {
+  testWidgets('TodoPage renders title and FAB', (WidgetTester tester) async {
     await tester.pumpWidget(const MyApp());
+    // Allow initial frames
+    await tester.pumpAndSettle();
 
-    expect(find.text('to_do_frontend App is being generated...'), findsOneWidget);
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    // Custom app bar title
+    expect(find.text('TODO APP'), findsOneWidget);
+    // FAB exists (add button)
+    expect(find.byType(FloatingActionButton), findsOneWidget);
   });
 
-  testWidgets('App bar has correct title', (WidgetTester tester) async {
+  testWidgets('Navigate to AddTodoPage and back', (WidgetTester tester) async {
     await tester.pumpWidget(const MyApp());
+    await tester.pumpAndSettle();
 
-    expect(find.text('to_do_frontend'), findsOneWidget);
+    // Tap FAB to go to AddTodo
+    final fab = find.byType(FloatingActionButton);
+    expect(fab, findsOneWidget);
+    await tester.tap(fab);
+    await tester.pumpAndSettle();
+
+    // "Add Task" title should be visible
+    expect(find.text('Add Task'), findsOneWidget);
+
+    // Go back
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+
+    // Back on TodoPage
+    expect(find.text('TODO APP'), findsOneWidget);
   });
 }
